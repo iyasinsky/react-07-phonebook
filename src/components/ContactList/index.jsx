@@ -1,5 +1,5 @@
 import { useSelector, useDispatch } from 'react-redux';
-import { deleteContact } from 'redux/Operations';
+import { deleteContact } from 'redux/operations';
 import { List } from './index.styled';
 
 export const ContactsList = () => {
