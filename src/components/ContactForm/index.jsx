@@ -8,7 +8,7 @@ import { FormikForm } from './index.styled';
 
 const contactSchema = Yup.object().shape({
   name: Yup.string().required(),
-  phone: Yup.string().phone().required(),
+  phone: Yup.string().phone('UA').required(),
 });
 
 export const ContactForm = () => {
@@ -25,7 +25,6 @@ export const ContactForm = () => {
       return;
     }
     dispatch(addContact(newContact));
-    // dispatch(addContact({ id: nanoid(4), ...newContact }));
   };
 
   return (
