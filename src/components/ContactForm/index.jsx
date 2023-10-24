@@ -1,17 +1,14 @@
 import { useDispatch } from 'react-redux';
 import { Formik, Field, ErrorMessage } from 'formik';
-import { nanoid } from 'nanoid';
-import { object, string } from 'yup';
+import * as Yup from 'yup';
 import 'yup-phone-lite';
-import { addContact } from 'redux/ContactsSlice';
+import { addContact } from 'redux/Operations';
 import { useSelector } from 'react-redux';
 import { FormikForm } from './index.styled';
 
-const contactSchema = object().shape({
-  name: string().required('Required field!'),
-  number: string()
-    .phone('UA', 'Please enter a Ukrainian phone number')
-    .required('Required field!'),
+const contactSchema = Yup.object().shape({
+  name: Yup.string().required(),
+  phone: Yup.string().phone().required(),
 });
 
 export const ContactForm = () => {
@@ -27,14 +24,15 @@ export const ContactForm = () => {
       alert(`${newContact.name} is already in contacts.`);
       return;
     }
-    dispatch(addContact({ id: nanoid(4), ...newContact }));
+    dispatch(addContact(newContact));
+    // dispatch(addContact({ id: nanoid(4), ...newContact }));
   };
 
   return (
     <div>
       <h1>Phonebook</h1>
       <Formik
-        initialValues={{ name: '', number: '' }}
+        initialValues={{ name: '', phone: '' }}
         validationSchema={contactSchema}
         onSubmit={(values, actions) => {
           contactHandler(values);
@@ -51,10 +49,10 @@ export const ContactForm = () => {
           </label>
           <label>
             <div>
-              <span>Number</span>
-              <Field name="number" placeholder="Enter UA phone number" />
+              <span>Phone</span>
+              <Field name="phone" placeholder="Enter UA phone number" />
             </div>
-            <ErrorMessage name="number" component="p" />
+            <ErrorMessage name="phone" component="p" />
           </label>
           <button type="submit">Add new contact</button>
         </FormikForm>

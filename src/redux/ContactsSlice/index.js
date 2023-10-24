@@ -1,35 +1,70 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { persistReducer } from 'redux-persist';
-import storage from 'redux-persist/lib/storage';
+import { fetchContacts, addContact, deleteContact } from '../Operations';
+
+const pendingReducer = state => {
+  state.isLoading = true;
+};
+
+const rejectedReducer = (state, action) => {
+  state.isLoading = false;
+  state.error = action.payload;
+};
+
+const fetchContactsFulfilledReducer = (state, action) => {
+  state.isLoading = false;
+  state.error = null;
+  state.items = action.payload;
+};
+
+const addContactFulfilledReducer = (state, action) => {
+  state.isLoading = false;
+  state.error = null;
+  state.items.push(action.payload);
+};
+
+const deleteContactFulfilledReducer = (state, action) => {
+  state.isLoading = false;
+  state.error = null;
+  const index = state.items.findIndex(task => task.id === action.payload.id);
+  state.items.splice(index, 1);
+};
+
+// const toggleCompletedFulFilledReducer = (state, action) => {
+//   state.isLoading = false;
+//   state.error = null;
+//   const index = state.items.findIndex(task => task.id === action.payload.id);
+//   state.items.splice(index, 1, action.payload);
+// };
 
 const contactsSlice = createSlice({
   name: 'contacts',
   initialState: {
-    items: [
-      { id: 'id-1', name: 'Rosie Simpson', number: '067-459-12-56' },
-      { id: 'id-2', name: 'Hermione Kline', number: '+38 (050) 443 89 12' },
-      { id: 'id-3', name: 'Eden Clements', number: '(093)-645-17-79' },
-      { id: 'id-4', name: 'Annie Copeland', number: '0972279126' },
-    ],
+    items: [],
+    isLoading: false,
+    error: null,
   },
-  reducers: {
-    addContact: (state, action) => {
-      state.items.push(action.payload);
-    },
-    deleteContact: (state, action) => {
-      state.items = state.items.filter(({ id }) => id !== action.payload);
-    },
-  },
+  // reducers: {
+  //   addContact: (state, action) => {
+  //     state.items.push(action.payload);
+  //   },
+  //   deleteContact: (state, action) => {
+  //     state.items = state.items.filter(({ id }) => id !== action.payload);
+  //   },
+  // },
+  extraReducers: builder =>
+    builder
+      .addCase(fetchContacts.pending, pendingReducer)
+      .addCase(fetchContacts.fulfilled, fetchContactsFulfilledReducer)
+      .addCase(fetchContacts.rejected, rejectedReducer)
+      .addCase(addContact.pending, pendingReducer)
+      .addCase(addContact.fulfilled, addContactFulfilledReducer)
+      .addCase(addContact.rejected, rejectedReducer)
+      .addCase(deleteContact.pending, pendingReducer)
+      .addCase(deleteContact.fulfilled, deleteContactFulfilledReducer)
+      .addCase(deleteContact.rejected, rejectedReducer),
+  // .addCase(toggleCompleted.pending, pendingReducer)
+  // .addCase(toggleCompleted.fulfilled, toggleCompletedFulFilledReducer)
+  // .addCase(toggleCompleted.rejected, rejectedReducer),
 });
 
-export const { addContact, deleteContact } = contactsSlice.actions;
-
-const persistConfig = {
-  key: 'contacts',
-  storage,
-};
-
-export const persistedReducer = persistReducer(
-  persistConfig,
-  contactsSlice.reducer
-);
+export const contactsReducer = contactsSlice.reducer;
