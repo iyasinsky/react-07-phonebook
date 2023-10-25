@@ -1,30 +1,24 @@
 import { useDispatch } from 'react-redux';
 import { Formik, Field, ErrorMessage } from 'formik';
-import * as Yup from 'yup';
-import 'yup-phone-lite';
 import { addContact } from 'redux/Operations';
 import { useSelector } from 'react-redux';
 import { FormikForm } from './index.styled';
-
-const contactSchema = Yup.object().shape({
-  name: Yup.string().required(),
-  phone: Yup.string().phone('UA').required(),
-});
+import { formValidationScheme } from 'helpers/FormValidation';
+import { selectContacts } from 'redux/Selectors';
 
 export const ContactForm = () => {
   const dispatch = useDispatch();
-  const contacts = useSelector(state => state.contacts.items);
+  const contacts = useSelector(selectContacts);
 
   const contactHandler = newContact => {
     const normalizedName = newContact.name.toLowerCase();
     const isContactExist = contacts.some(
-      ({ name }) => name.toLowerCase() === normalizedName
+      contact => contact.name.toLowerCase() === normalizedName
     );
-    if (isContactExist) {
-      alert(`${newContact.name} is already in contacts.`);
-      return;
-    }
-    dispatch(addContact(newContact));
+
+    isContactExist
+      ? alert(`${newContact.name} is already in contacts.`)
+      : dispatch(addContact(newContact));
   };
 
   return (
@@ -32,7 +26,7 @@ export const ContactForm = () => {
       <h1>Phonebook</h1>
       <Formik
         initialValues={{ name: '', phone: '' }}
-        validationSchema={contactSchema}
+        validationSchema={formValidationScheme}
         onSubmit={(values, actions) => {
           contactHandler(values);
           actions.resetForm();

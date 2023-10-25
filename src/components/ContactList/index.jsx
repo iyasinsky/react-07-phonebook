@@ -1,22 +1,15 @@
 import { useSelector, useDispatch } from 'react-redux';
 import { deleteContact } from 'redux/Operations';
+import { selectVisibleContacts } from 'redux/Selectors';
 import { List } from './index.styled';
 
 export const ContactsList = () => {
   const dispatch = useDispatch();
-  const contacts = useSelector(state => state.contacts.items);
-
-  const normalizedFilterValue = useSelector(state =>
-    state.filter.toLowerCase()
-  );
-  const filteredContacts = () =>
-    contacts.filter(({ name }) =>
-      name.toLowerCase().includes(normalizedFilterValue)
-    );
+  const contacts = useSelector(selectVisibleContacts);
 
   return (
     <List>
-      {filteredContacts().map(({ id, name, phone }) => {
+      {contacts.map(({ id, name, phone }) => {
         return (
           <li key={id}>
             <span>{name}:</span>
