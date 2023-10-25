@@ -2,7 +2,7 @@ import { useDispatch } from 'react-redux';
 import { Formik, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import 'yup-phone-lite';
-import { addContact } from 'redux/operations';
+import { addContact } from 'redux/Operations';
 import { useSelector } from 'react-redux';
 import { FormikForm } from './index.styled';
 
